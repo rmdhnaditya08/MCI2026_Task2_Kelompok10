@@ -198,7 +198,7 @@ Simpan Parquet → /opt/airflow/data_lake/orders/orders_YYYYMMDD_HHMMSS.parquet
 }
 ```
 
-> **Catatan penting:** Kolom `products` berisi array of struct (nested). Inilah yang membuat proses di Spark harus melakukan `explode` terlebih dahulu sebelum bisa diagregasi.
+> **Catatan :** Kolom `products` berisi array of struct (nested). Ini yang membuat proses di Spark harus melakukan `explode` terlebih dahulu sebelum bisa diagregasi.
 
 ---
 
@@ -220,7 +220,7 @@ df_raw = spark.read.parquet("file:///opt/airflow/data_lake/orders/")
 
 #### Bagian 2 — Explode & Flatten Array Products
 
-Ini adalah langkah paling krusial. Array `products` harus dipecah menjadi baris individual.
+Array `products` harus dipecah menjadi baris individual.
 
 ```python
 # Explode: 1 baris order → N baris (sebanyak produk dalam order)
