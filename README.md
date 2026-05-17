@@ -1,5 +1,4 @@
-# 🛒 Orders Realtime Analytics Pipeline
-### MCI2026 — Task 2 | Pipeline Orchestration & Data Visualization
+# MCI — Task 2 
 
 ---
 
