@@ -14,10 +14,8 @@ def run_spark_analytics():
     df_raw = spark.read.parquet("file:///opt/airflow/data_lake/orders/")
     print(f"Total baris terbaca: {df_raw.count()}")
 
-    # Explode array products menjadi baris individual
     df_exploded = df_raw.withColumn("product", F.explode(F.col("products")))
 
-    # Flatten kolom dari struct products
     df_flat = df_exploded.select(
         F.col("order_id"),
         F.col("user_id"),
@@ -33,7 +31,7 @@ def run_spark_analytics():
         F.col("product.add_to_cart_order").alias("add_to_cart_order")
     )
 
-    # ── ANALITIK 1: Top Department (Heavy Hitters) ────────────────────────────
+    # Top Department (Heavy Hitters) 
     print("Kalkulasi Top Department (Heavy Hitters)...")
     department_df = df_flat.groupBy("department") \
         .agg(
@@ -44,7 +42,7 @@ def run_spark_analytics():
         ) \
         .orderBy(F.desc("total_items_ordered"))
 
-    # ── ANALITIK 2: Top 20 Produk Terlaris ───────────────────────────────────
+    # Top 20 Produk Terlaris 
     print("Kalkulasi Top 20 Produk Terlaris...")
     products_df = df_flat.groupBy("product_id", "product_name", "department", "aisle") \
         .agg(
@@ -54,7 +52,7 @@ def run_spark_analytics():
         .orderBy(F.desc("total_ordered")) \
         .limit(20)
 
-    # ── ANALITIK 3: Top Aisle ─────────────────────────────────────────────────
+    # Top Aisle 
     print("Kalkulasi Top Aisle...")
     aisle_df = df_flat.groupBy("aisle", "department") \
         .agg(
@@ -64,7 +62,7 @@ def run_spark_analytics():
         .orderBy(F.desc("total_items_ordered")) \
         .limit(20)
 
-    # ── ANALITIK 4: Distribusi Order per Hari dalam Seminggu ──────────────────
+    # Distribusi Order per Hari dalam Seminggu
     print("Kalkulasi Distribusi Order per Day of Week...")
     dow_df = df_raw.groupBy("order_dow") \
         .agg(
@@ -73,7 +71,7 @@ def run_spark_analytics():
         ) \
         .orderBy("order_dow")
 
-    # ── ANALITIK 5: Distribusi Order per Jam ──────────────────────────────────
+    # Distribusi Order per Jam 
     print("Kalkulasi Distribusi Order per Hour of Day...")
     hour_df = df_raw.groupBy("order_hour_of_day") \
         .agg(
@@ -99,7 +97,7 @@ def run_spark_analytics():
 
     client.execute('CREATE DATABASE IF NOT EXISTS analytics')
 
-    # ── Tabel 1: Department Summary ───────────────────────────────────────────
+    # Tabel 1: Department Summary 
     client.execute('''
         CREATE TABLE IF NOT EXISTS analytics.orders_department_summary (
             department          String,
@@ -117,7 +115,7 @@ def run_spark_analytics():
         ].itertuples(index=False, name=None)]
         client.execute('INSERT INTO analytics.orders_department_summary VALUES', rows)
 
-    # ── Tabel 2: Top 20 Produk ────────────────────────────────────────────────
+    # Top 20 Produk 
     client.execute('''
         CREATE TABLE IF NOT EXISTS analytics.orders_top_products (
             product_id      Int32,
@@ -136,7 +134,7 @@ def run_spark_analytics():
         ].itertuples(index=False, name=None)]
         client.execute('INSERT INTO analytics.orders_top_products VALUES', rows)
 
-    # ── Tabel 3: Top Aisle ────────────────────────────────────────────────────
+    # Tabel 3: Top Aisle 
     client.execute('''
         CREATE TABLE IF NOT EXISTS analytics.orders_top_aisle (
             aisle               String,
@@ -153,7 +151,7 @@ def run_spark_analytics():
         ].itertuples(index=False, name=None)]
         client.execute('INSERT INTO analytics.orders_top_aisle VALUES', rows)
 
-    # ── Tabel 4: Order per Day of Week ────────────────────────────────────────
+    # Tabel 4: Order per Day of Week 
     client.execute('''
         CREATE TABLE IF NOT EXISTS analytics.orders_by_dow (
             order_dow            Int32,
@@ -170,7 +168,7 @@ def run_spark_analytics():
         ].itertuples(index=False, name=None)]
         client.execute('INSERT INTO analytics.orders_by_dow VALUES', rows)
 
-    # ── Tabel 5: Order per Hour of Day ────────────────────────────────────────
+    # Tabel 5: Order per Hour of Day 
     client.execute('''
         CREATE TABLE IF NOT EXISTS analytics.orders_by_hour (
             order_hour_of_day Int32,
@@ -185,7 +183,6 @@ def run_spark_analytics():
         ].itertuples(index=False, name=None)]
         client.execute('INSERT INTO analytics.orders_by_hour VALUES', rows)
 
-    # ── Cleanup ───────────────────────────────────────────────────────────────
     print("Membersihkan file Parquet lama dari Data Lake...")
     files = glob.glob('/opt/airflow/data_lake/orders/*.parquet')
     for f in files:
@@ -194,7 +191,7 @@ def run_spark_analytics():
         except OSError as e:
             print(f"Error: {f} : {e.strerror}")
 
-    print("✅ Pipeline Orders Selesai!")
+    print("Pipeline Orders Selesai!")
 
 if __name__ == "__main__":
     run_spark_analytics()
