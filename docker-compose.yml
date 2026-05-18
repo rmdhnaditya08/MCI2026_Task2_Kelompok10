@@ -34,7 +34,8 @@ services:
     <<: *airflow-common
     command: >
       bash -c "airflow db migrate &&
-      airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com"
+      airflow connections create-default-connections &&
+      (airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com || echo 'User already exists')"
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,10 +45,20 @@ services:
     command: webserver
     ports:
       - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
 
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
 
   clickhouse-server:
     image: clickhouse/clickhouse-server:latest
