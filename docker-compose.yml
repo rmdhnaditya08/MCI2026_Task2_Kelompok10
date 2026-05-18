@@ -7,6 +7,9 @@ x-airflow-common:
     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
     - AIRFLOW__CORE__LOAD_EXAMPLES=False
     - AIRFLOW__WEBSERVER__SECRET_KEY=rahasia_pelatihan_mmds_12345
+    - AIRFLOW__WEBSERVER__BASE_URL=https://165.22.246.60/airflow
+    - AIRFLOW__WEBSERVER__WEB_SERVER_URL_PREFIX=/airflow
+    - AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX=True
   volumes:
     - ./dags:/opt/airflow/dags
     - ./data_lake:/opt/airflow/data_lake
@@ -58,7 +61,23 @@ services:
 
   metabase:
     image: metabase/metabase:latest
+    environment:
+      - MB_JETTY_CONTEXT_PATH=/metabase
+      - MB_SITE_URL=https://165.22.246.60/metabase
     ports:
       - "3000:3000"
     depends_on:
+      - clickhouse-server
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - airflow-webserver
+      - metabase
       - clickhouse-server
