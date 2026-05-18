@@ -7,7 +7,7 @@ x-airflow-common:
     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
     - AIRFLOW__CORE__LOAD_EXAMPLES=False
     - AIRFLOW__WEBSERVER__SECRET_KEY=rahasia_pelatihan_mmds_12345
-    - AIRFLOW__WEBSERVER__BASE_URL=https://165.22.246.60/airflow
+    - AIRFLOW__WEBSERVER__BASE_URL=https://103.253.147.216/airflow
     - AIRFLOW__WEBSERVER__WEB_SERVER_URL_PREFIX=/airflow
     - AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX=True
   volumes:
@@ -74,7 +74,7 @@ services:
     image: metabase/metabase:latest
     environment:
       - MB_JETTY_CONTEXT_PATH=/metabase
-      - MB_SITE_URL=https://165.22.246.60/metabase
+      - MB_SITE_URL=https://103.253.147.216/metabase
     ports:
       - "3000:3000"
     depends_on:
