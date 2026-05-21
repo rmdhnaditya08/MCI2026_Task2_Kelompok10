@@ -248,6 +248,9 @@ df_flat = df_exploded.select(
 | 4 | `orders_by_dow` | `df_raw` | total_orders per hari |
 | 5 | `orders_by_hour` | `df_raw` | total_orders per jam |
 
+**DAG**
+<img width="1918" height="924" alt="image" src="https://github.com/user-attachments/assets/b1d400bc-81e2-437d-a5ca-728c6cf84aff" />
+
 ---
 
 **Validasi Data di Clickhouse**
@@ -255,4 +258,10 @@ df_flat = df_exploded.select(
 docker exec -it mcitugas2-clickhouse-server-1 clickhouse-client --user admin --password rahasia
 ```
 <img width="1219" height="653" alt="image" src="https://github.com/user-attachments/assets/103f080d-04a7-4609-b50b-74ad0185bc20" />
+
+**Visualisasi Metabase**
+http://localhost:3000/public/dashboard/62539061-f2cd-4ee0-b5e7-f1116f2c13ab
+
+<img width="885" height="897" alt="image" src="https://github.com/user-attachments/assets/ebe51b79-b9c6-4415-b555-cabedf731e58" />
+
 
