@@ -2,7 +2,7 @@
 
 ---
 
-## 📖 Deskripsi Proyek
+## Deskripsi Proyek
 
 Pipeline ini membangun sistem analitik **micro-batching** untuk dataset Orders dari REST API. Data ditarik secara periodik setiap 10 menit menggunakan Apache Airflow, diproses dengan Apache Spark, dimuat ke ClickHouse sebagai Data Warehouse, lalu divisualisasikan melalui dashboard Metabase.
 
@@ -23,7 +23,7 @@ Pipeline ini membangun sistem analitik **micro-batching** untuk dataset Orders d
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 | Komponen | Teknologi | 
 |---|---|
@@ -37,7 +37,7 @@ Pipeline ini membangun sistem analitik **micro-batching** untuk dataset Orders d
 
 ---
 
-## 📂 Struktur Repository
+## Struktur Repository
 
 ```
 MCI2026_Task2/
@@ -56,13 +56,13 @@ MCI2026_Task2/
 
 ---
 
-## 🔄 Penjelasan Pipeline & Kode
+## Penjelasan Pipeline & Kode
 
 Pipeline terdiri dari **2 task** yang berjalan berurutan di dalam Airflow DAG.
 
 ---
 
-### 📄 File 1: `orders_pipeline_dag.py` — Airflow DAG
+### File 1: `orders_pipeline_dag.py` — Airflow DAG
 
 File ini adalah **jantung orkestrasi** pipeline. Mendefinisikan kapan dan bagaimana setiap task dijalankan.
 
@@ -118,7 +118,7 @@ with DAG(
 
 ---
 
-### 📄 File 2: `fetch_orders_stream.py` — Task Ingestion
+### File 2: `fetch_orders_stream.py` — Task Ingestion
 
 File ini menjalankan **Task 1**: menarik data dari REST API dan menyimpannya ke Data Lake dalam format Parquet.
 
@@ -202,7 +202,7 @@ Simpan Parquet → /opt/airflow/data_lake/orders/orders_YYYYMMDD_HHMMSS.parquet
 
 ---
 
-### 📄 File 3: `process_orders_spark.py` — Task Processing & Load
+### File 3: `process_orders_spark.py` — Task Processing & Load
 
 File ini menjalankan **Task 2**: membaca Parquet dari Data Lake, melakukan 5 agregasi dengan Spark, lalu memuat hasilnya ke 5 tabel ClickHouse.
 
@@ -249,4 +249,10 @@ df_flat = df_exploded.select(
 | 5 | `orders_by_hour` | `df_raw` | total_orders per jam |
 
 ---
+
+**Validasi Data di Clickhouse**
+```python
+docker exec -it mcitugas2-clickhouse-server-1 clickhouse-client --user admin --password rahasia
+```
+<img width="1219" height="653" alt="image" src="https://github.com/user-attachments/assets/103f080d-04a7-4609-b50b-74ad0185bc20" />
 
